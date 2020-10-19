@@ -33,5 +33,8 @@ module RESTApi
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    #Allow My ember app to contact this one...
+    config.hosts << "localhost:4200"
   end
 end
