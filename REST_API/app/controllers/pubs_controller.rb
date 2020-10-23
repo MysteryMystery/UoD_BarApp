@@ -5,7 +5,7 @@ class PubsController < ApplicationController
   def index
     @pubs = Pub.all
 
-    wrappedPubs = {"pubs" => @pubs}
+    wrappedPubs = {"data" => @pubs}
     render json: wrappedPubs
   end
 
