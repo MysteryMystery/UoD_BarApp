@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.btn {
+  @apply py-2 px-4;
+}
+
+.btn-primary {
+  @apply bg-yellow-600;
+}
+
+.btn-primary:hover {
+  @apply bg-yellow-700;
+}

@@ -1,9 +1,12 @@
-<h1>Pubs:</h1>
-
-{{#each @model as |pub|}}
-  <div class="">
-      <h3>{{ pub.name }}</h3>
+<ContentContainer>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    {{#each @model as |pub|}}
+      <div>
+        <PubCard @pub={{ pub }}>
+        </PubCard>
+      </div>
+    {{/each}}
   </div>
-{{/each}}
+</ContentContainer>
 
 {{outlet}}
