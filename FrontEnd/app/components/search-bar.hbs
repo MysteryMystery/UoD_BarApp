@@ -1,0 +1,13 @@
+<div class="flex items-center py-2 border-b border-gray-700 mb-2">
+  <label for="searchBox" class="font-bold pr-3">Search: </label>
+  <Input id="searchBox" value="{{ this.search }}" {{ on "input" this.doSearch }}></Input>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+  {{#each this.models as |pub|}}
+    <div>
+      <PubCard @pub={{ pub }}>
+      </PubCard>
+    </div>
+  {{/each}}
+</div>

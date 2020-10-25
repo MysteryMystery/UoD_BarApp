@@ -10,13 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_19_163603) do
+ActiveRecord::Schema.define(version: 2020_10_25_103547) do
+
+  create_table "pub_tables", force: :cascade do |t|
+    t.integer "pub_id"
+    t.string "table_number"
+    t.integer "table_capacity"
+    t.string "location"
+    t.index ["pub_id"], name: "index_pub_tables_on_pub_id"
+  end
 
   create_table "pubs", force: :cascade do |t|
-    t.integer "number_of_tables"
     t.string "name"
+    t.string "address_line_1"
+    t.string "address_line_2"
+    t.string "address_line_3"
+    t.string "address_line_4"
+    t.string "address_postcode"
+    t.string "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "pub_tables", "pubs"
 end

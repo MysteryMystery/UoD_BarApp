@@ -1,4 +1,5 @@
 class Pub < ApplicationRecord
+  has_many :pub_table
 
   def as_json(options = nil)
     json = {}

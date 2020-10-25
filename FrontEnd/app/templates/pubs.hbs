@@ -1,12 +1,7 @@
 <ContentContainer>
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    {{#each @model as |pub|}}
-      <div>
-        <PubCard @pub={{ pub }}>
-        </PubCard>
-      </div>
-    {{/each}}
-  </div>
+  <SearchBar @models={{@model}} @fields="name|address_line_1">
+
+  </SearchBar>
 </ContentContainer>
 
 {{outlet}}

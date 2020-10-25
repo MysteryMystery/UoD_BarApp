@@ -2,7 +2,14 @@ import Model, { attr } from '@ember-data/model';
 
 export default class PubModel extends Model {
   @attr("string") name;
-  @attr("number") number_of_tables;
+  @attr("string") description
+
+  @attr("string") address_line_1
+  @attr("string") address_line_2
+  @attr("string") address_line_3
+  @attr("string") address_line_4
+  @attr("string") address_postcode
+
   @attr created_at;
   @attr updated_at;
 }

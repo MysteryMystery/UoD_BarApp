@@ -6,6 +6,23 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-3.times do |n|
-  Pub.create(number_of_tables: n, name: "Pub_#{n}")
+10.times do |n|
+  pub = Pub.create(
+      name: Faker::Restaurant.name,
+      description: Faker::Restaurant.description,
+      address_line_1: Faker::Address.street_address,
+      address_line_2: Faker::Address.community,
+      address_line_3: Faker::Address.city,
+      address_line_4: Faker::Address.country,
+      address_postcode: Faker::Address.postcode
+  )
+
+  Faker::Number.between(from: 1, to: 30).times do |x|
+    PubTable.create(
+        pub_id: pub.id,
+        table_number: x,
+        table_capacity: Faker::Number.between(from: 2, to: 12),
+        location: "Indoors"
+    )
+  end
 end
