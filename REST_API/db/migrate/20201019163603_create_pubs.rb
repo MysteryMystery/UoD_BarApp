@@ -11,6 +11,8 @@ class CreatePubs < ActiveRecord::Migration[6.0]
 
       t.string :description
 
+      t.references :user, index: true, foreign_key: true
+
       t.timestamps
     end
   end

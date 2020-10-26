@@ -1,0 +1,26 @@
+<div>
+  <div class="grid grid-cols-3 gap-2">
+    <div>
+      <label for="email">Email:</label>
+    </div>
+    <div class="col-span-2">
+      <Input id="email" type="email" {{ on "input" this.setEmail}}></Input>
+    </div>
+
+    <div>
+      <label for="password">Password:</label>
+    </div>
+    <div class="col-span-2">
+      <Input id="password" type="password" {{ on "input" this.setPassword}}></Input>
+    </div>
+
+    <div class="col-span-3">
+      <span class="text-red-600">{{ this.errorMsg }}</span>
+    </div>
+
+    <div class="col-span-2"></div>
+    <div class="text-right">
+      <button class="btn btn-primary" {{ on "click" this.submit }}>Submit</button>
+    </div>
+  </div>
+</div>

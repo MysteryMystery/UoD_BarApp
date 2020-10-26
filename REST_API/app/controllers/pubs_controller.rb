@@ -1,22 +1,24 @@
 class PubsController < ApplicationController
+  before_action :authenticate_request, only: [:create, :update, :destroy]
   before_action :set_pub, only: [:show, :update, :destroy]
 
   # GET /pubs
   def index
     @pubs = Pub.all
 
-    wrappedPubs = {"data" => @pubs}
-    render json: wrappedPubs
+    standardise @pubs
   end
 
   # GET /pubs/1
   def show
-    render json: @pub
+    standardise @pub
   end
 
   # POST /pubs
   def create
-    @pub = Pub.new(pub_params)
+    pubData = pub_params
+    pubData[:user_id] = @user.id
+    @pub = Pub.new(pubData)
 
     if @pub.save
       render json: @pub, status: :created, location: @pub
@@ -47,6 +49,7 @@ class PubsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def pub_params
-      params.require(:pub).permit(:number_of_tables)
+      params.require(:pub).permit(:name, :address_line_1, :address_line_2, :address_line_3,
+                                  :address_line_4, :address_postcode, :description)
     end
 end

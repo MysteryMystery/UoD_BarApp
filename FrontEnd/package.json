@@ -61,5 +61,8 @@
   },
   "ember": {
     "edition": "octane"
+  },
+  "dependencies": {
+    "ember-cli-shims": "^1.2.0"
   }
 }
