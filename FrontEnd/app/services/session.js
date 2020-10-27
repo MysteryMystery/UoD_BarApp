@@ -1,13 +1,34 @@
 import Service from '@ember/service';
 
 export default class SessionService extends Service {
-  jwt = null;
+  storageKey = "session"
+  sessionData = this.loadFromDisk()
 
-  get jwt() {
-    return this.jwt
+  loadFromDisk(){
+    const item = localStorage.getItem(this.storageKey)
+    return item ? JSON.parse(item) : {};
   }
 
-  set jwt(value){
-    this.jwt = value
+  redirectIfUnauth(route){
+    if (!this.isLoggedIn)
+      route.replaceWith("/")
+  }
+
+  set isLoggedIn(value){
+    this.set("logged_in", true)
+  }
+
+  get isLoggedIn(){
+    var v = this.getAttr("logged_in")
+    return !(v === undefined || !v)
+  }
+
+  set(key, value){
+    this.sessionData[key] = value;
+    localStorage.setItem(this.storageKey, JSON.stringify(this.sessionData))
+  }
+
+  getAttr(key){
+    return this.sessionData[key]
   }
 }

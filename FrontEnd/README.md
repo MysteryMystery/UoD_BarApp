@@ -3,6 +3,10 @@
 This README outlines the details of collaborating on this Ember application.
 A short introduction of this app could easily go here.
 
+## TODO and Security Concerns
+* Session service is using local storage for storing jwt token. Need to find a way of securing this to prevent csrf attacks.
+
+
 ## Prerequisites
 
 You will need the following things properly installed on your computer.

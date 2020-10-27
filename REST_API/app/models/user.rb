@@ -3,6 +3,8 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
 
+  has_many :pubs
+
   def encode_jwt(payload)
     JWT.encode payload, Rails.application.secrets.secret_key_base, "HS256"
   end

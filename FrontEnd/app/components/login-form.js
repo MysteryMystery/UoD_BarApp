@@ -4,6 +4,7 @@ import {tracked} from "@glimmer/tracking";
 import fetch from "fetch";
 import ENV from "front-end/config/environment";
 import {inject as service} from "@ember/service";
+import $ from "jquery"
 
 export default class LoginFormComponent extends Component {
   @service("session") session;
@@ -15,6 +16,24 @@ export default class LoginFormComponent extends Component {
 
   @action
   async submit() {
+
+    // eslint-disable-next-line ember/no-jquery
+    $.ajax({
+      url: ENV.APP.RAILS_API + "login",
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: JSON.stringify({"email": this.email, "password": this.password})
+    })
+      .done(data => {
+        this.session.isLoggedIn = data.status === "ok"
+        this.router.transitionTo("dashboard")
+      })
+      .fail(() => this.errorMsg = "Your credentials did not match our records.")
+
+    /*
     await fetch(ENV.APP.RAILS_API + "login", {
       method: "POST",
       mode: "cors",
@@ -26,10 +45,11 @@ export default class LoginFormComponent extends Component {
     })
       .then(_ => _.json())
       .then(data => {
-        this.session.jwt = data.data.attributes.jwt
+        this.session.isLoggedIn = data.status === "ok"
         this.router.transitionTo("dashboard")
       })
       .catch(() => this.errorMsg = "Your credentials did not match our records.")
+     */
   }
 
   @action

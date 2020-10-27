@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   post "signup", to: "users#create"
   post "authenticate", to:"users#authenticate_token"
 
+  get "users/:id/pubs", to:"users#pubs"
   resources :users
   resources :pubs
   get '*other', to: 'static#index'

@@ -2,4 +2,7 @@
 curl -X POST http://localhost:3000/login -d email=100380362@unimail.derby.ac.uk -d password=password
 
 #Create Pub
-curl -X POST http://localhost:3000/pubs -d email=100380362@unimail.derby.ac.uk name="Bobs Burgers" -d description="Cooks Burgers" -d postcode=DE13BZ -jwt=
+curl -X POST http://localhost:3000/pubs -d name="Bobs Burgers" -d description="Cooks Burgers" -d postcode=DE13BZ -jwt=
+
+#User pubs
+curl -X POST http://localhost:3000/pubs -d id=1 -d jwt=eyJhbGciOiJIUzI1NiJ9.IjEwMDM4MDM2MkB1bmltYWlsLmRlcmJ5LmFjLnVrIg.fnP78Bzy_46s5q8XMifb5r2-Fn1Fz1g_m9NnWB5d1u8
