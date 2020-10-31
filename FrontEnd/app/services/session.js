@@ -9,17 +9,12 @@ export default class SessionService extends Service {
     return item ? JSON.parse(item) : {};
   }
 
-  redirectIfUnauth(route){
-    if (!this.isLoggedIn)
-      route.replaceWith("/")
-  }
-
   set isLoggedIn(value){
     this.set("logged_in", true)
   }
 
   get isLoggedIn(){
-    var v = this.getAttr("logged_in")
+    var v = this.getAttr("jwt")
     return !(v === undefined || !v)
   }
 
@@ -30,5 +25,10 @@ export default class SessionService extends Service {
 
   getAttr(key){
     return this.sessionData[key]
+  }
+
+  redirectIfUnauth(route){
+    if (!this.getAttr("jwt"))
+      route.replaceWith("/")
   }
 }

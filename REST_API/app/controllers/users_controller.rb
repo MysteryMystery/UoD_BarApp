@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_request, only: [:index, :show, :update, :destroy, :pubs]
-  before_action :set_user, only: [:show, :update, :destroy, :pubs]
+  before_action :set_user, only: [:show, :update, :destroy]
 
   # GET /users
   def index
@@ -47,11 +47,11 @@ class UsersController < ApplicationController
   def login
     user = User.find_by_email params[:email]
     if user && user.authenticate(params[:password])
-      session[:user_id] = user.id
-      render json: {:status => :ok}
-      # user_as_json = user.as_json
-      # user_as_json[:attributes][:jwt] = user.encode_jwt(user.email)
-      # standardise user_as_json
+      #session[:user_id] = user.id
+      #render json: {:status => :ok}
+      user_as_json = user.as_json
+      user_as_json[:attributes][:jwt] = user.encode_jwt(user.email)
+      standardise user_as_json
     else
       render json: {:status => :failed}
     end

@@ -11,7 +11,7 @@ class User < ApplicationRecord
 
   def self.decode_jwt(token)
     body = JWT.decode(token, Rails.application.secrets.secret_key_base, true, algorithm: 'HS256')
-    HashWithIndifferentAccess.new(body)
+    body[0]
     rescue JWT::ExpiredSignature
       nil
   end

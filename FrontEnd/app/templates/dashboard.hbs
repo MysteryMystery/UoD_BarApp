@@ -1,4 +1,12 @@
-<ContentContainer>
-  <h1>Dashboard</h1>
-  <hr>
-</ContentContainer>
+<div class="grid grid-cols-1 md:grid-cols-8" xmlns:Dashboard="">
+  <div>
+    <Dashboard::Sidebar::sidebar>
+      <Dashboard::Sidebar::Link @href="/dashboard">My Pubs</Dashboard::Sidebar::Link>
+    </Dashboard::Sidebar::sidebar>
+  </div>
+  <div class="md:col-span-7">
+    <ContentContainer>
+      <Dashboard::MyPubs></Dashboard::MyPubs>
+    </ContentContainer>
+  </div>
+</div>
