@@ -1,0 +1,125 @@
+<div>
+  <div class="grid grid-cols-3 gap-2">
+    <div>
+      <label for="pub_name">Pub Name:</label>
+    </div>
+    <div class="col-span-2">
+      <Input id="pub_name" type="text" {{ on "input" this.setName}}></Input>
+    </div>
+
+    <div>
+      <label for="description">Pub Description:</label>
+    </div>
+    <div class="col-span-2">
+      <Textarea id="description" {{ on "input" this.setDescription}}></Textarea>
+    </div>
+
+    <div>
+      <label for="address_line_1">Address Line 1:</label>
+    </div>
+    <div class="col-span-2">
+      <Input id="address_line_1" {{ on "input" this.setAddressLine1}}></Input>
+    </div>
+    <div>
+      <label for="address_line_2">Address Line 2:</label>
+    </div>
+    <div class="col-span-2">
+      <Input id="address_line_2" {{ on "input" this.setAddressLine2}}></Input>
+    </div>
+    <div>
+      <label for="address_line_3">Address Line 3:</label>
+    </div>
+    <div class="col-span-2">
+      <Input id="address_line_3" {{ on "input" this.setAddressLine3}}></Input>
+    </div>
+    <div>
+      <label for="address_line_4">Address Line 4:</label>
+    </div>
+    <div class="col-span-2">
+      <Input id="address_line_4" {{ on "input" this.setAddressLine4}}></Input>
+    </div>
+    <div>
+      <label for="address_postcode">Postcode:</label>
+    </div>
+    <div class="col-span-2">
+      <Input id="address_postcode" {{ on "input" this.setAddressPostcode}}></Input>
+    </div>
+
+    <div class="col-span-3">
+      <h1 class="text-lg">Tables</h1>
+      <hr>
+    </div>
+
+
+    {{#each this.tables as |table index| }}
+      <div>
+        <label for="table_number">Table Number:</label>
+      </div>
+      <div class="col-span-2">
+        <Input id="table_number" data-index="{{ index }}" value="{{ table.table_number }}" {{ on "input" this.updateTableNumber }}/>
+      </div>
+      <div>
+        <label for="table_number">Table Capacity:</label>
+      </div>
+      <div class="col-span-2">
+        <Input type="number" min="0" data-index="{{ index }}" id="table_capacity" value="{{ table.table_capacity }}" {{ on "input" this.updateTableCapacity }}/>
+      </div>
+      <div>
+        <label for="table_number">Table Location:</label>
+      </div>
+      <div class="col-span-2">
+        <Input id="table_location" data-index="{{ index }}" value="{{ table.location }}" {{ on "input" this.updateTableLocation }}/>
+      </div>
+    <div class="col-span-3">
+      <hr>
+    </div>
+    {{/each}}
+
+
+    <div><button class="btn btn-primary" {{on "click" this.newTable }} >New Table</button></div>
+
+    <div class="col-span-3">
+      <h1 class="text-lg">Opening Hours</h1>
+      <hr>
+    </div>
+
+    {{#each this.openingHours as |openingHour index|}}
+      <div>
+        <label>
+          Open:
+          <Input value="{{ openingHour.start }}" data-index="{{ index }}" />
+        </label>
+      </div>
+      <div>
+        <label>
+          Close:
+          <Input value="{{ openingHour.end }}" data-index="{{ index }}" />
+        </label>
+      </div>
+      <div>
+        <label>
+          Days:
+        </label>
+        <div class="">
+          {{#each this.DAYS as |value|}}
+            <label class="inline-block">
+              {{ value }}
+              <Input type="checkbox" class="" value="{{ value }}" data-index="{{ index }}" data-day="{{ value }}" />
+            </label>
+          {{/each}}
+        </div>
+      </div>
+    {{/each}}
+    <div><button class="btn btn-primary" {{on "click" this.newHours }} >More Hours</button></div>
+
+
+    <div class="col-span-3">
+      <span class="text-red-600">{{ this.errorMsg }}</span>
+    </div>
+
+    <div class="col-span-2"></div>
+    <div class="text-right">
+      <button class="btn btn-primary" {{ on "click" this.submit }}>Submit</button>
+    </div>
+  </div>
+</div>

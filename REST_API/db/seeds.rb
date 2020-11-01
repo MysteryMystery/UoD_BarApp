@@ -21,9 +21,11 @@ user = User.create(
       address_line_3: Faker::Address.city,
       address_line_4: Faker::Address.country,
       address_postcode: Faker::Address.postcode,
-
-      user_id: user.id
+      user_id: user.id,
   )
+
+  pub.images.attach(io: File.open(Dir.glob(File.join(Rails.root, "db/seeding_images", "*")).sample), filename: Faker::FunnyName.name)
+
 
   Faker::Number.between(from: 1, to: 30).times do |x|
     PubTable.create(

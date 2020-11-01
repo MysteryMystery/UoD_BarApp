@@ -1,12 +1,12 @@
 <div class="grid grid-cols-1 md:grid-cols-8" xmlns:Dashboard="">
-  <div>
+  <div class="">
     <Dashboard::Sidebar::sidebar>
       <Dashboard::Sidebar::Link @href="/dashboard">My Pubs</Dashboard::Sidebar::Link>
     </Dashboard::Sidebar::sidebar>
   </div>
   <div class="md:col-span-7">
     <ContentContainer>
-      <Dashboard::MyPubs></Dashboard::MyPubs>
+      {{ outlet }}
     </ContentContainer>
   </div>
 </div>

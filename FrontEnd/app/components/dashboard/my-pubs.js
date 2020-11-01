@@ -22,6 +22,7 @@ export default class DashboardMyPubsComponent extends Component {
     await fetch(ENV.APP.RAILS_API + "users/pubs?jwt=" + this.session.getAttr("jwt"), {
       method: "get",
       mode: "cors",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json"
       },

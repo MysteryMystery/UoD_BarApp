@@ -19,6 +19,7 @@ class PubsController < ApplicationController
     pubData = pub_params
     pubData[:user_id] = @user.id
     @pub = Pub.new(pubData)
+    @pub.images.attach(params[:images])
 
     if @pub.save
       render json: @pub, status: :created, location: @pub
@@ -49,7 +50,9 @@ class PubsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def pub_params
-      params.require(:pub).permit(:name, :address_line_1, :address_line_2, :address_line_3,
-                                  :address_line_4, :address_postcode, :description)
+      params
+          .require(:pub)
+          .permit(:name, :address_line_1, :address_line_2, :address_line_3,
+                                  :address_line_4, :address_postcode, :description, images: [])
     end
 end
