@@ -3,6 +3,7 @@ class Pub < ApplicationRecord
 
   has_many :pub_tables
   has_many :opening_hours
+  has_many :bookings
   has_many_attached :images
   has_one :user
 

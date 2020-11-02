@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :bookings
   post "login", to: "users#login"
   post "signup", to: "users#create"
   post "authenticate", to:"users#authenticate_token"
