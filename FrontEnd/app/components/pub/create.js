@@ -1,11 +1,16 @@
 import Component from '@glimmer/component';
-import {tracked} from "@glimmer/tracking";
 import { action } from '@ember/object';
-import $ from "jquery";
+import {tracked} from "@glimmer/tracking";
+import fetch from "fetch";
+import ENV from "front-end/config/environment";
+import {inject as service} from "@ember/service";
 
 export default class PubCreateComponent extends Component {
   DAYS = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
 
+  @service session;
+
+  @tracked images = []
   @tracked name = ""
   @tracked description = ""
   @tracked address_line_1 = ""
@@ -26,7 +31,7 @@ export default class PubCreateComponent extends Component {
     {
       start: "00:00",
       end: "23:00",
-      days: [
+      opening_hour_days_attributes: [
         "Monday",
         "Tuesday"
       ]
@@ -70,7 +75,7 @@ export default class PubCreateComponent extends Component {
   }
 
   @action
-  newTable(e){
+  newTable(){
     this.tables.push({
       table_number: null,
       table_capacity: null,
@@ -109,8 +114,55 @@ export default class PubCreateComponent extends Component {
   }
 
   @action
-  submit(){
+  setImages(event){
+    const fileReader = new FileReader()
+    const uploadedFiles = event.target.files
+    const processedData = []
 
+    //Not sure if this check is needed or not as called on input event
+    if (uploadedFiles.length === 0)
+      return
+
+    fileReader.onload = () => {
+      processedData.push(fileReader.result)
+    }
+
+    uploadedFiles.forEach(file => fileReader.readAsDataURL(file));
+    this.images = processedData;
+  }
+
+  @action
+  async submit(){
+    await fetch(ENV.APP.RAILS_API + "pubs", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      redirect: "follow",
+      body: JSON.stringify({
+        jwt: this.session.getAttr("jwt"),
+        pub: {
+          name: this.name,
+          description: this.description,
+          address_line_1: this.address_line_1,
+          address_line_2: this.address_line_2,
+          address_line_3: this.address_line_3,
+          address_line_4: this.address_line_4,
+          address_postcode: this.address_postcode,
+
+          pub_tables_attributes: this.tables,
+          opening_hours_attributes: this.openingHours,
+          images: this.images
+        },
+      })
+    })
+      .then(_ => _.json())
+      .then(data => {
+        console.log(data)
+        //this.router.transitionTo("dashboard")
+      })
+      .catch(() => this.errorMsg = "Something went wrong")
   }
 }
 

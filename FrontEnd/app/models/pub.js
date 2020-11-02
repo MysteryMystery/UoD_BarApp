@@ -10,6 +10,8 @@ export default class PubModel extends Model {
   @attr("string") address_line_4
   @attr("string") address_postcode
 
+  @attr("array") images;
+
   @attr created_at;
   @attr updated_at;
 }

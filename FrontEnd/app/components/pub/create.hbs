@@ -101,17 +101,23 @@
           Days:
         </label>
         <div class="">
-          {{#each this.DAYS as |value|}}
+          {{#each this.DAYS as |value index|}}
             <label class="inline-block">
               {{ value }}
-              <Input type="checkbox" class="" value="{{ value }}" data-index="{{ index }}" data-day="{{ value }}" />
+              <Input type="checkbox" class="" value="{{ index }}" data-index="{{ index }}" data-day="{{ value }}" />
             </label>
           {{/each}}
         </div>
       </div>
     {{/each}}
-    <div><button class="btn btn-primary" {{on "click" this.newHours }} >More Hours</button></div>
+    <div class="col-span-3"><button class="btn btn-primary" {{on "click" this.newHours }} >More Hours</button></div>
 
+    <div>
+      <label for="images">Upload Images:</label>
+    </div>
+    <div class="col-span-2">
+      <Input id="images" type="file" multiple="true" accept="image/png" {{ on "input" this.setImages}}></Input>
+    </div>
 
     <div class="col-span-3">
       <span class="text-red-600">{{ this.errorMsg }}</span>

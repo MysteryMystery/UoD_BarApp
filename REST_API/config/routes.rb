@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   post "authenticate", to:"users#authenticate_token"
 
   get "users/pubs", to:"users#pubs"
+
+  get "pubs/thumbnails/:key", to: "pubs#image", as: "pub_thumbnail"
   resources :users
   resources :pubs
   get '*other', to: 'static#index'

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_01_104824) do
+ActiveRecord::Schema.define(version: 2020_11_02_120711) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -31,6 +31,23 @@ ActiveRecord::Schema.define(version: 2020_11_01_104824) do
     t.string "checksum", null: false
     t.datetime "created_at", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "opening_hour_days", force: :cascade do |t|
+    t.integer "opening_hour_id"
+    t.integer "day_int"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["opening_hour_id"], name: "index_opening_hour_days_on_opening_hour_id"
+  end
+
+  create_table "opening_hours", force: :cascade do |t|
+    t.integer "pub_id"
+    t.time "start"
+    t.time "end"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["pub_id"], name: "index_opening_hours_on_pub_id"
   end
 
   create_table "pub_tables", force: :cascade do |t|
@@ -73,6 +90,8 @@ ActiveRecord::Schema.define(version: 2020_11_01_104824) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "opening_hour_days", "opening_hours"
+  add_foreign_key "opening_hours", "pubs"
   add_foreign_key "pub_tables", "pubs"
   add_foreign_key "pubs", "users"
 end
