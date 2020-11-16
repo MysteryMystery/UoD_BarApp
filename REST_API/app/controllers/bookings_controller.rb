@@ -1,6 +1,8 @@
 class BookingsController < ApplicationController
   before_action :set_booking, only: [:show, :update, :destroy]
 
+  before_action :authenticate_request, only: [:show, :index]
+
   # GET /bookings
   def index
     @bookings = Booking.all
@@ -44,12 +46,38 @@ class BookingsController < ApplicationController
 
     #Can't seem to find a method for inputting whole date as is, so going to have to split it and pass
     # each individually
-    query_date_array = query_date.split("-")
-    time = Time.new query_date_array[0], query_date_array[1], query_date_array[2]
+    time = query_date.to_time
     weekday = time.wday #0 = sunday, 0..6
 
     opening_hours = hours_open_on_day pub, weekday
-    existing_bookings = existing_bookings_on_date pub, query_date
+    if opening_hours == nil
+      return render json: [] # no time for bookings
+    end
+
+    existing_bookings = existing_bookings_on_date(pub, query_date).to_a
+    #return render json: existing_bookings
+
+    # Now to build array from our ordered records
+    # 30 mins intervals as default. Each booking can determine their booking length
+    open_slots = Array.new
+    opening_hours.each do |opening_hour|
+      start_time = opening_hour.start
+      end_time = opening_hour.end
+
+      while (start_time - end_time) < 0 do
+        if existing_bookings.length == 0 || existing_bookings[0].time.strftime(presentable_time_format) != start_time.strftime(presentable_time_format) then
+          open_slots.push(start_time.strftime(presentable_time_format))
+        else
+          start_time = start_time + (existing_bookings[0].minutes - 30) * 60
+          existing_bookings.shift(1)
+        end
+
+        # REMEMBER: TIME IS IMMUTABLE IN RUBY! 1hr wasted.
+        start_time = start_time + 30 * 60
+      end
+    end
+
+    render json: open_slots
   end
 
   private
@@ -60,21 +88,30 @@ class BookingsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def booking_params
-      params.fetch(:booking, {})
+      params.require(:booking).permit(:pub_id, :date, :time, :minutes, :pub_table_id)
     end
 
+    # @param pub: Pub
+    # @param day: int 0..6
+    # @return array of records
     def hours_open_on_day pub, day
       OpeningHour.joins(:opening_hour_days)
-        .where(pub_id: pub.id) # of pub
+        .where(pub: pub) # of pub
         .where(opening_hour_days: { day_int: day }) # on specified day
-        .take
+        .order(start: :asc)
     end
 
+    # @param pub: Pub
+    # @param date: string of format y-m-d
+    # @return array of records
     def existing_bookings_on_date pub, date
       Booking
         .where(date: date)
-        .where(pub_id: pub.id)
+        .where(pub: pub)
         .order(time: :asc)
-        .take
     end
+
+  def presentable_time_format
+    "%H:%M"
+  end
 end

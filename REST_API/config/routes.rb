@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   get "users/pubs", to:"users#pubs"
 
-  get "pubs/:pub/:date", to: "pubs#open_booking_slots"
+  get "pubs/:pub/:date", to: "bookings#open_booking_slots"
 
   get "pubs/thumbnails/:key", to: "pubs#image", as: "pub_thumbnail"
   resources :users

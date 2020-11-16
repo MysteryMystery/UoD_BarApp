@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_02_120711) do
+ActiveRecord::Schema.define(version: 2020_11_02_171100) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -31,6 +31,18 @@ ActiveRecord::Schema.define(version: 2020_11_02_120711) do
     t.string "checksum", null: false
     t.datetime "created_at", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "bookings", force: :cascade do |t|
+    t.integer "pub_id"
+    t.integer "pub_table_id"
+    t.date "date"
+    t.time "time"
+    t.integer "minutes"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["pub_id"], name: "index_bookings_on_pub_id"
+    t.index ["pub_table_id"], name: "index_bookings_on_pub_table_id"
   end
 
   create_table "opening_hour_days", force: :cascade do |t|
@@ -90,6 +102,8 @@ ActiveRecord::Schema.define(version: 2020_11_02_120711) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bookings", "pub_tables"
+  add_foreign_key "bookings", "pubs"
   add_foreign_key "opening_hour_days", "opening_hours"
   add_foreign_key "opening_hours", "pubs"
   add_foreign_key "pub_tables", "pubs"
