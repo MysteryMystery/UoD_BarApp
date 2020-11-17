@@ -1,6 +1,7 @@
 class PubsController < ApplicationController
   before_action :authenticate_request, only: [:create, :update, :destroy]
   before_action :set_pub, only: [:show, :update, :destroy]
+  before_action :check_is_owned_pub, only: [:update, :destroy]
 
   # GET /pubs
   def index
@@ -56,9 +57,6 @@ class PubsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_pub
-      @pub = Pub.find(params[:id])
-    end
 
     # Only allow a trusted parameter "white list" through.
     def pub_params

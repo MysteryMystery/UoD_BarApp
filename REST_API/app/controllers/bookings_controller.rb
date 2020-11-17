@@ -1,9 +1,10 @@
 class BookingsController < ApplicationController
   before_action :set_booking, only: [:show, :update, :destroy]
 
-  before_action :authenticate_request, only: [:show, :index]
+  before_action :authenticate_request, only: [:show, :index, :update]
+  before_action :set_pub, only: [:index]
 
-  # GET /bookings
+  # GET /pubs/:pub/bookings
   def index
     @bookings = Booking.all
 

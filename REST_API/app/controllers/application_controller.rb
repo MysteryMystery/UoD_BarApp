@@ -9,11 +9,19 @@ class ApplicationController < ActionController::API
   end
 
   protected
+  # If authenticated, @user will be available during this request
     def authenticate_request
       user_email = User.decode_jwt(params[:jwt])
       if user_email && (user = User.find_by_email(user_email))
         @user = user
-      else abort "JWT missing. Need to make this graceful."
+      else
+        render json: [
+            "message" => "JWT missing or invalid."
+        ]
       end
+    end
+
+    def set_pub
+      @pub = Pub.find(params[:id])
     end
 end

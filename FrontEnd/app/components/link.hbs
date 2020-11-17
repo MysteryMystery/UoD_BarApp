@@ -1,5 +1,5 @@
 <a
-   class="rounded bg-{{ if @type @type "primary" }} hover:bg-{{ if @hover @hover "secondary" }} transition duration-100 ease-in-out py-2 px-4"
+   class="{{if @sharp "" "rounded"}} bg-{{ if @type @type "primary" }} hover:bg-{{ if @hover @hover "secondary" }} transition duration-100 ease-in-out py-2 px-4"
    href="{{ @href }}"
 >
   {{ yield }}

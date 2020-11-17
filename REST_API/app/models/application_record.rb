@@ -9,4 +9,13 @@ class ApplicationRecord < ActiveRecord::Base
     json[:id] = self.id
     json
   end
+
+  protected
+    def check_is_owned_pub
+      unless @user.owns_pub @pub
+        render json: [
+            "message" => "User does not own this pub."
+        ]
+      end
+    end
 end
