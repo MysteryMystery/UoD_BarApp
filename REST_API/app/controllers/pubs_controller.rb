@@ -77,7 +77,9 @@ class PubsController < ApplicationController
                   opening_hours_attributes: [
                       :start,
                       :end,
-                      days: []
+                      opening_hour_days_attributes: [
+                          :day_int
+                      ]
                   ],
                   images: []
                   )

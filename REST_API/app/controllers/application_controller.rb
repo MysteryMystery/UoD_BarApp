@@ -16,7 +16,10 @@ class ApplicationController < ActionController::API
         @user = user
       else
         render json: [
-            "message" => "JWT missing or invalid."
+            "message" => "JWT missing or invalid.",
+            :errors => [
+              :message => "JWT missing or invalid."
+            ]
         ]
       end
     end

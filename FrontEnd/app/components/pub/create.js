@@ -6,7 +6,7 @@ import ENV from "front-end/config/environment";
 import {inject as service} from "@ember/service";
 
 export default class PubCreateComponent extends Component {
-  DAYS = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
+  DAYS = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
 
   @service session;
 
@@ -32,8 +32,12 @@ export default class PubCreateComponent extends Component {
       start: "00:00",
       end: "23:00",
       opening_hour_days_attributes: [
-        "Monday",
-        "Tuesday"
+        {
+          day_int: 0
+        },
+        {
+          day_int: 1
+        }
       ]
     }
   ]
@@ -116,12 +120,14 @@ export default class PubCreateComponent extends Component {
   @action
   setImages(event){
     const fileReader = new FileReader()
-    const uploadedFiles = event.target.files
-    const processedData = []
+    const uploadedFiles = Array.from(event.target.files) // event.target.files instanceof FileList
+    const processedData = [] // can't just add to this.images directly, otherwise ember doesn't see it
 
     //Not sure if this check is needed or not as called on input event
     if (uploadedFiles.length === 0)
       return
+
+    console.log(uploadedFiles)
 
     fileReader.onload = () => {
       processedData.push(fileReader.result)

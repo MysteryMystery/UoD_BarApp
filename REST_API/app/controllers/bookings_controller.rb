@@ -66,7 +66,7 @@ class BookingsController < ApplicationController
       end_time = opening_hour.end
 
       while (start_time - end_time) < 0 do
-        if existing_bookings.length == 0 || existing_bookings[0].time.strftime(presentable_time_format) != start_time.strftime(presentable_time_format) then
+        if existing_bookings.length == 0 || existing_bookings[0].time.strftime(presentable_time_format) != start_time.strftime(presentable_time_format)
           open_slots.push(start_time.strftime(presentable_time_format))
         else
           start_time = start_time + (existing_bookings[0].minutes - 30) * 60
