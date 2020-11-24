@@ -1,4 +1,6 @@
 class ApplicationRecord < ActiveRecord::Base
+  #include ActiveStorageSupport::SupportForBase64
+
   self.abstract_class = true
 
   def as_json(options = nil)

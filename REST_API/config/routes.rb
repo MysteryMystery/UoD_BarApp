@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   get "users/pubs", to:"users#pubs"
   get "pubs/thumbnails/:key", to: "pubs#image", as: "pub_thumbnail"
-  get "pubs/:pub/:date", to: "bookings#open_booking_slots"
+  get "pubs/:pub/:date/:table_capacity", to: "bookings#open_booking_slots"
   get "pubs/:pub/bookings", to: "bookings#index"
   resources :bookings, except: :index # index will be /pub/{pub}/bookings instead of /bookings
   resources :users

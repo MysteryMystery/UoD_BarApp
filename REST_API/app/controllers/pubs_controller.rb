@@ -22,7 +22,18 @@ class PubsController < ApplicationController
     pubData[:user_id] = @user.id
     @pub = Pub.new(pubData)
     @pub.save
-    #@pub.images.attach(pub_image_params)
+
+    blobs = Array.new
+    params[:pub][:images].each do |image|
+      blobs << ActiveStorage::Blob.create_after_upload!(
+          io: StringIO.new((Base64.decode64(image.split(",")[1]))), # Take the actual image string
+          filename: DateTime.now.strftime("%Q") + ".png",
+          content_type: "image/png",
+          )
+    end
+    @pub.images.attach blobs
+
+    #@pub.images.attach(params[:pub][:images])
     #@pub.pub_tables.create(pubData.fetch(:pub_tables))
     #@pub.opening_hours.create(pub_opening_hours_params)
 
@@ -81,7 +92,7 @@ class PubsController < ApplicationController
                           :day_int
                       ]
                   ],
-                  images: []
+          #images: []
                   )
     end
 end

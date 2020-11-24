@@ -43,10 +43,9 @@ class BookingsController < ApplicationController
 
   def open_booking_slots
     pub = params[:pub]
+    capacity = params[:table_capacity]
     query_date = params[:date] # y-m-d
 
-    #Can't seem to find a method for inputting whole date as is, so going to have to split it and pass
-    # each individually
     time = query_date.to_time
     weekday = time.wday #0 = sunday, 0..6
 
@@ -55,7 +54,9 @@ class BookingsController < ApplicationController
       return render json: [] # no time for bookings
     end
 
-    existing_bookings = existing_bookings_on_date(pub, query_date).to_a
+    existing_bookings = existing_bookings_on_date(pub, query_date, capacity).to_a
+    all_tables = tables pub
+
     #return render json: existing_bookings
 
     # Now to build array from our ordered records
@@ -89,7 +90,7 @@ class BookingsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def booking_params
-      params.require(:booking).permit(:pub_id, :date, :time, :minutes, :pub_table_id)
+      params.require(:booking).permit(:pub_id, :date, :time, :table_capacity, :minutes, :pub_table_id)
     end
 
     # @param pub: Pub
@@ -104,13 +105,22 @@ class BookingsController < ApplicationController
 
     # @param pub: Pub
     # @param date: string of format y-m-d
+    # @param capacity: int
     # @return array of records
-    def existing_bookings_on_date pub, date
+    def existing_bookings_on_date pub, date, capacity
       Booking
-        .where(date: date)
-        .where(pub: pub)
+          .joins(:pub_table)
+          .where(date: date)
+          .where(pub: pub)
+          .where(pub_table: {
+              table_capacity: capacity
+          })
         .order(time: :asc)
     end
+
+  def tables pub
+    PubTable.where(pub: pub).order(:table_capacity)
+  end
 
   def presentable_time_format
     "%H:%M"
