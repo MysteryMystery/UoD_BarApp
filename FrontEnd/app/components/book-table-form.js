@@ -12,6 +12,7 @@ export default class BookTableFormComponent extends Component {
   @tracked pub = this.args.pub;
 
   @tracked booking_times = [];
+  @tracked booking_time;
 
   @action
   setField(event) {
@@ -20,8 +21,6 @@ export default class BookTableFormComponent extends Component {
 
   @action
   async getBookingTimes(){
-    console.log("uibivuo")
-
     //"pubs/:pub/:date/:table_capacity"
     let url = ENV.APP.RAILS_API + "pubs/";
     url += this.pub.id + "/"
@@ -31,18 +30,35 @@ export default class BookTableFormComponent extends Component {
     await fetch(url)
       .then(_ => _.json())
       .then(data => {
-        console.log(data)
+        let availableTimes = data.times;
+        console.log(data.times)
+        this.booking_times = [];
+        this.booking_times = availableTimes;
       })
-      .catch(() => this.blah = "")
+      .catch(() => console.log("error"))
+  }
+
+  @action
+  async submit(){
+    await fetch(ENV.APP.RAILS_API + "bookings", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      redirect: "follow",
+      body: JSON.stringify({
+        pub_id: this.pub.id,
+        date: this.date,
+        time: this.booking_time,
+        table_capacity: this.table_capacity,
+      })
+    })
   }
 
   initDate(){
     let x;
     const date = new Date()
     return date.getFullYear() + "-" + ((x = date.getMonth()).length < 2 ? ("0" + x) : x) + "-" + ((x = date.getDate()).length < 2 ? ("0" + x) : x);
-  }
-
-  bookingTimesIsEmpty(){
-    return this.booking_times.length === 0
   }
 }

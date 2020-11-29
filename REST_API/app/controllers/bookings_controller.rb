@@ -18,13 +18,30 @@ class BookingsController < ApplicationController
 
   # POST /bookings
   def create
-    @booking = Booking.new(booking_params)
+    booking_data = booking_params
+    booking_data[:minutes] = 120
 
-    if @booking.save
-      render json: @booking, status: :created, location: @booking
+    # Validate and get a table
+    open_slots = open_booking_slots_internal params[:pub_id], params[:table_capacity], params[:date]
+    if open_slots.include? params[:time]
+      all_tables_of_capacity = PubTable.where(table_capacity: params[:table_capacity]).map { |x| x.id }
+      bookings_at_this_time = existing_bookings_on_date(params[:pub_id], params[:date], params[:table_capacity]).where(time: params[:time])
+
+      #guarranteed a free table as validation in self::open_booking_slots_internal
+      bookings_at_this_time.each { |booking| all_tables_of_capacity.delete booking.pub_table_id }
+      booking_data[:pub_table] = all_tables_of_capacity[0]
+
+      @booking = Booking.new(booking_data)
+
+      if @booking.save
+        render json: @booking, status: :created, location: @booking
+      else
+        render json: @booking.errors, status: :unprocessable_entity
+      end
     else
-      render json: @booking.errors, status: :unprocessable_entity
+      render json: { :error => "validation failed" }
     end
+
   end
 
   # PATCH/PUT /bookings/1
@@ -42,47 +59,49 @@ class BookingsController < ApplicationController
   end
 
   def open_booking_slots
-    pub = params[:pub]
-    capacity = params[:table_capacity]
-    query_date = params[:date] # y-m-d
-
-    time = query_date.to_time
-    weekday = time.wday #0 = sunday, 0..6
-
-    opening_hours = hours_open_on_day pub, weekday
-    if opening_hours == nil
-      return render json: [] # no time for bookings
-    end
-
-    existing_bookings = existing_bookings_on_date(pub, query_date, capacity).to_a
-    all_tables = tables pub
-
-    #return render json: existing_bookings
-
-    # Now to build array from our ordered records
-    # 30 mins intervals as default. Each booking can determine their booking length
-    open_slots = Array.new
-    opening_hours.each do |opening_hour|
-      start_time = opening_hour.start
-      end_time = opening_hour.end
-
-      while (start_time - end_time) < 0 do
-        if existing_bookings.length == 0 || existing_bookings[0].time.strftime(presentable_time_format) != start_time.strftime(presentable_time_format)
-          open_slots.push(start_time.strftime(presentable_time_format))
-        else
-          start_time = start_time + (existing_bookings[0].minutes - 30) * 60
-          existing_bookings.shift(1)
-        end
-
-        # REMEMBER: TIME IS IMMUTABLE IN RUBY! 1hr wasted.
-        start_time = start_time + 30 * 60
-      end
-    end
-
-    render json: open_slots
+    #pub = params[:pub]
+    #     capacity = params[:table_capacity]
+    #     query_date = params[:date] # y-m-d
+    #
+    open_slots = open_booking_slots_internal params[:pub], params[:table_capacity], params[:date]
+    return_open_booking_slots open_slots
   end
 
   private
+    def open_booking_slots_internal pub, capacity, query_date
+      time = query_date.to_time
+      weekday = time.wday #0 = sunday, 0..6
+
+      opening_hours_models = hours_open_on_day pub, weekday
+      if opening_hours_models.empty?
+        return return_open_booking_slots []
+      end
+
+      all_valid_tables = pub_tables(pub).where(table_capacity: capacity)
+      existing_bookings = existing_bookings_on_date(pub, query_date, capacity)
+
+      open_slots = []
+      opening_hours_models.each do |opening_hour|
+        start_time = opening_hour.start
+        end_time = opening_hour.end
+
+        while (start_time - end_time) < 0 do
+          bookings_at_this_time = existing_bookings.where(time: start_time)
+          if all_valid_tables.length > bookings_at_this_time.length
+            # spare table, add to available times
+            open_slots.push(start_time.strftime(presentable_time_format))
+          end
+          start_time = start_time + 120 * 60 # TIME IS IMMUTABLE IN RUBY!!!!
+        end
+      end
+
+      open_slots
+    end
+
+    def return_open_booking_slots times
+      render json: {:times => times}
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_booking
       @booking = Booking.find(params[:id])
@@ -90,7 +109,15 @@ class BookingsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def booking_params
-      params.require(:booking).permit(:pub_id, :date, :time, :table_capacity, :minutes, :pub_table_id)
+      params.require(:booking)
+          .permit(
+              :pub_id,
+              :date,
+              :time,
+              :table_capacity,
+          #:minutes,
+          #:pub_table_id
+          )
     end
 
     # @param pub: Pub
@@ -112,13 +139,13 @@ class BookingsController < ApplicationController
           .joins(:pub_table)
           .where(date: date)
           .where(pub: pub)
-          .where(pub_table: {
+          .where(pub_tables: {
               table_capacity: capacity
           })
-        .order(time: :asc)
+          .order(time: :asc)
     end
 
-  def tables pub
+  def pub_tables pub
     PubTable.where(pub: pub).order(:table_capacity)
   end
 

@@ -4,7 +4,7 @@
       <p class="font-bold">Name:</p>
       <p class="text-sm">This will be used to identify you when you arrive.</p>
     </label>
-    <Input id="email" type="email" {{ on "input" this.setField}} {{ on "change" this.getBookingTimes }}></Input>
+    <Input id="email" {{ on "input" this.setField}} {{ on "change" this.getBookingTimes }}></Input>
   </div>
   <div class="col-span-4 md:col-span-1">
     <label>
@@ -25,13 +25,17 @@
       <p class="font-bold">Pick a time:</p>
       <p class="text-sm">We will fit you in where we can!</p>
     </label>
-    <select id="booking_times" class="w-full border rounded-md p-2 text-gray-900">
-      {{#if this.bookingTimesIsEmpty}}
-        <option value="None">None</option>
-      {{/if}}
+    <select id="booking_time" class="w-full border rounded-md p-2 text-gray-900" {{ on "change" this.setField }}>
       {{#each this.booking_times as |booking_time| }}
         <option value="{{ booking_time }}">{{ booking_time }}</option>
       {{/each}}
     </select>
+  </div>
+
+  {{#each (repeat 3) as |count|}}
+    <div></div>
+  {{/each}}
+  <div class="col-span-4 md:col-span-1">
+    <button class="py-2 px-3 block w-full bg-primary hover:bg-secondary transition ease-in-out duration-500" {{ on "click" this.submit }}>Book</button>
   </div>
 </div>
