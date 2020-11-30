@@ -1,3 +1,9 @@
+<div class="ease-in-out transition-all duration-500 bg-secondary {{ if this.booking_number "px-4 py-2" }} rounded-xl">
+    {{#if this.booking_number}}
+        <p class="text-2xl">Your Booking Number is: <span class="text-3xl font-bold">{{ this.booking_number }}</span></p>
+        <p>Please use this number as a reference for any enquiries concerning your reservation.</p>
+    {{/if}}
+</div>
 <div class="grid grid-cols-4 gap-2">
   <div class="col-span-4 md:col-span-1">
     <label>

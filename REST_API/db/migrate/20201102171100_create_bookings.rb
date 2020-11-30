@@ -8,6 +8,8 @@ class CreateBookings < ActiveRecord::Migration[6.0]
       t.time :time
       t.integer :minutes
 
+      t.text :booking_number, index: { unique: true }
+
       t.timestamps
     end
   end

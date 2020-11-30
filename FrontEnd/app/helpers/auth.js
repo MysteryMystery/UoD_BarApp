@@ -5,6 +5,6 @@ export default class Auth extends Helper {
   @service("session") session;
 
   compute(){
-    return !!this.session.jwt;
+    return !!this.session.getAttr("jwt");
   }
 }

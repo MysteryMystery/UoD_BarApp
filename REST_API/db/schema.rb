@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 2020_11_02_171100) do
     t.date "date"
     t.time "time"
     t.integer "minutes"
+    t.text "booking_number"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["pub_id"], name: "index_bookings_on_pub_id"

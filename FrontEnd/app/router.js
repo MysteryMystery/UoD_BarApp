@@ -14,6 +14,8 @@ Router.map(function() {
   this.route('dashboard', function() {
     this.route('pubs', function() {
       this.route('create');
+      this.route('bookings', {path: "/:pub_id/bookings"});
+      this.route('edit', {path: "/:pub_id/edit"});
     });
   });
 });

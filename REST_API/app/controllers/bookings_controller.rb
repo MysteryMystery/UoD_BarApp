@@ -4,14 +4,21 @@ class BookingsController < ApplicationController
   before_action :authenticate_request, only: [:show, :index, :update]
   before_action :set_pub, only: [:index]
 
-  # GET /pubs/:pub/bookings
+  # GET /pubs/:id/bookings/(:date)
   def index
-    @bookings = Booking.all
+    date = params.has_key?(:date) ? params[:date] : Time.new.strftime("%Y-%m-%d")
+    # pub = @pub
+
+    @bookings = Booking
+                    .where(date: date)
+                    .where(pub: @pub)
+                    .order(time: :asc)
 
     render json: @bookings
   end
 
   # GET /bookings/1
+  #
   def show
     render json: @booking
   end
@@ -29,7 +36,8 @@ class BookingsController < ApplicationController
 
       #guarranteed a free table as validation in self::open_booking_slots_internal
       bookings_at_this_time.each { |booking| all_tables_of_capacity.delete booking.pub_table_id }
-      booking_data[:pub_table] = all_tables_of_capacity[0]
+      booking_data[:pub_table] = PubTable.find all_tables_of_capacity[0]
+      booking_data[:booking_number] = Booking.new_booking_number
 
       @booking = Booking.new(booking_data)
 

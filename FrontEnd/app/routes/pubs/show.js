@@ -4,6 +4,7 @@ import fetch from "fetch"
 
 export default class PubsShowRoute extends Route {
   @service store;
+  @service("session") session;
 
   async model(params) {
     return await this.store.findRecord("pub", params.pub_id)

@@ -15,7 +15,8 @@ export default class SessionService extends Service {
 
   get isLoggedIn(){
     var v = this.getAttr("jwt")
-    return !(v === undefined || !v)
+    console.log(!!v)
+    return !!v
   }
 
   set(key, value){

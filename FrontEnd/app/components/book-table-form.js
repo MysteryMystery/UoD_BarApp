@@ -14,6 +14,8 @@ export default class BookTableFormComponent extends Component {
   @tracked booking_times = [];
   @tracked booking_time;
 
+  @tracked booking_number = null;
+
   @action
   setField(event) {
     this[event.target.id] = event.target.value;
@@ -53,7 +55,10 @@ export default class BookTableFormComponent extends Component {
         time: this.booking_time,
         table_capacity: this.table_capacity,
       })
-    })
+    }).then(_ => _.json())
+      .then(data => {
+        this.booking_number = data.attributes.booking_number;
+      })
   }
 
   initDate(){
