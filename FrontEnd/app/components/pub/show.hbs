@@ -1,7 +1,7 @@
 {{#if this.session.isLoggedIn}}
   <div class="flex flex-wrap justify-end">
     <div class="w-1/4 md:w-1/10 p-1">
-      <a class="block w-full py-2 px-2 text-center transition-all ease-in-out duration-500 hover:bg-secondary bg-primary" href="javascript:void(0)">Edit</a>
+      <a class="block w-full py-2 px-2 text-center transition-all ease-in-out duration-500 hover:bg-secondary bg-primary" href="/dashboard/pubs/{{ @pub.id }}/edit">Edit</a>
     </div>
     <div class="w-1/4 md:w-1/10 py-1">
       <a class="block w-full py-2 px-2 text-center transition-all ease-in-out duration-500 hover:bg-secondary bg-primary" href="/dashboard/pubs/{{ @pub.id }}/bookings">Bookings</a>
@@ -14,7 +14,7 @@
 <div class="flex flex-wrap">
   {{#each @pub.images as |image|}}
     <div class="w-1/3 m-auto">
-      <img class="object-cover" src="http://{{ image }}">
+      <img class="object-cover" src="{{ image }}">
     </div>
   {{/each}}
 </div>

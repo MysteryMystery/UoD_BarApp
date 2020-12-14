@@ -43,6 +43,7 @@ module RESTApi
     #Allow My ember app to contact this one...
     config.hosts << "localhost:4200"
 
+    routes.default_url_options[:host_protocol] = "http://"
     routes.default_url_options[:host] = 'localhost:3000'
   end
 end

@@ -10,6 +10,8 @@ export default class PubCreateComponent extends Component {
 
   @service session;
 
+  @tracked existing_images = []
+
   @tracked images = []
   @tracked name = ""
   @tracked description = ""
@@ -42,6 +44,34 @@ export default class PubCreateComponent extends Component {
     }
   ]
 
+  /**
+   * I can't remember what x, y are, they just need to be a thing, and I don't need them
+   * @param x
+   * @param y
+   */
+  constructor(x, y) {
+    super(x, y);
+    this.populateForm();
+  }
+
+  @action
+  populateForm(){
+    const myPub = this.args.pub;
+    if (myPub === undefined)
+      return;
+
+    this.name = myPub.name
+    this.description = myPub.description
+    this.address_line_1 = myPub.address_line_1
+    this.address_line_2 = myPub.address_line_2
+    this.address_line_3 = myPub.address_line_3
+    this.address_line_4 = myPub.address_line_4
+    this.address_postcode = myPub.address_postcode
+    this.existing_images = myPub.images
+
+    console.log(myPub.pub_tables)
+
+  }
 
   @action
   setName(event){

@@ -1,6 +1,8 @@
-import Model, { attr } from '@ember-data/model';
+import Model, { attr, hasMany } from '@ember-data/model';
 
 export default class PubModel extends Model {
+  @hasMany("pub_tables") pub_tables;
+
   @attr("string") name;
   @attr("string") description
 
