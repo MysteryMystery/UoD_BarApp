@@ -31,4 +31,12 @@ class ApplicationController < ActionController::API
     def set_pub
       @pub = Pub.find(params[:id])
     end
+
+    def check_is_owned_pub
+      unless @user.owns_pub @pub
+        render json: [
+          "message" => "User does not own this pub."
+        ]
+      end
+    end
 end

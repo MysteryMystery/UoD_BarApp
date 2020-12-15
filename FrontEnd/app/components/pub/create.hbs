@@ -76,7 +76,12 @@
     {{/each}}
 
 
-    <div><button class="btn btn-primary" {{on "click" this.newTable }} >New Table</button></div>
+    <div class="col-span-2">
+      <button class="btn btn-primary" {{on "click" this.newTable }} >New Table</button>
+    </div>
+    <div class="">
+      <button class="btn bg-red-500" {{on "click" this.resetTables }} >Reset Tables</button>
+    </div>
 
     <div class="col-span-3">
       <h1 class="text-lg">Opening Hours</h1>
@@ -87,13 +92,13 @@
       <div>
         <label>
           Open:
-          <Input value="{{ openingHour.start }}" data-index="{{ index }}" />
+          <Input id="open" value="{{ openingHour.start }}" data-index="{{ index }}" />
         </label>
       </div>
       <div>
         <label>
           Close:
-          <Input value="{{ openingHour.end }}" data-index="{{ index }}" />
+          <Input id="close" value="{{ openingHour.end }}" data-index="{{ index }}" />
         </label>
       </div>
       <div>
@@ -101,16 +106,21 @@
           Days:
         </label>
         <div class="">
-          {{#each this.DAYS as |value index|}}
+          {{#each this.DAYS as |value indexx|}}
             <label class="inline-block">
               {{ value }}
-              <Input type="checkbox" class="" value="{{ index }}" data-index="{{ index }}" data-day="{{ value }}" />
+              <Input id="day-{{indexx}}" type="checkbox" class="" value="{{ indexx }}" data-index="{{ indexx }}" data-day="{{ value }}" checked={{if (opening-hour-ocurs-on-day openingHour indexx) "checked" ""}}/>
             </label>
           {{/each}}
         </div>
       </div>
     {{/each}}
-    <div class="col-span-3"><button class="btn btn-primary" {{on "click" this.newHours }} >More Hours</button></div>
+    <div class="col-span-2">
+      <button class="btn btn-primary" {{on "click" this.newHours }} >More Hours</button>
+    </div>
+    <div class="">
+      <button class="btn bg-red-500" {{on "click" this.resetOpeningHours }} >Reset Opening Hours</button>
+    </div>
 
     <div>
       <label for="images">Upload Images:</label>
@@ -120,8 +130,9 @@
     </div>
     <div class="grid grid-cols-3">
       {{#each this.existing_images as |image|}}
-        <div>
-          <img class="object-contain" src="{{ image }}">
+        <div class="bg-red-500" {{on "click" this.deleteImage}}>
+          <img class="z-10 object-contain opacity-100 hover:opacity-0" src="{{ image }}">
+          <div class="text-center px-1">Delete</div>
         </div>
       {{/each}}
     </div>
@@ -130,7 +141,13 @@
       <span class="text-red-600">{{ this.errorMsg }}</span>
     </div>
 
-    <div class="col-span-2"></div>
+    <div class="col-span-2">
+      {{#if @pub}}
+        <div class="">
+          <button class="btn bg-red-500" {{on "click" this.destroyPub }} >Destroy</button>
+        </div>
+      {{/if}}
+    </div>
     <div class="text-right">
       <button class="btn btn-primary" {{ on "click" this.submit }}>Submit</button>
     </div>

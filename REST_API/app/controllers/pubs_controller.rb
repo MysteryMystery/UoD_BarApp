@@ -1,7 +1,7 @@
 class PubsController < ApplicationController
-  before_action :authenticate_request, only: [:create, :update, :destroy]
-  before_action :set_pub, only: [:show, :update, :destroy]
-  before_action :check_is_owned_pub, only: [:update, :destroy]
+  before_action :authenticate_request, only: [:create, :update, :destroy, :reset_opening_hours, :reset_tables, :delete_image]
+  before_action :set_pub, only: [:show, :update, :destroy, :reset_opening_hours, :reset_tables, :delete_image]
+  before_action :check_is_owned_pub, only: [:update, :destroy, :reset_opening_hours, :reset_tables, :delete_image]
 
   # GET /pubs
   def index
@@ -58,6 +58,21 @@ class PubsController < ApplicationController
     @pub.destroy
   end
 
+  def reset_opening_hours
+    @pub.opening_hours.delete_all
+  end
+
+  def reset_tables
+    @pub.pub_tables.delete_all
+  end
+
+  def delete_image
+    image = ActiveStorage::Blob.find_by(key: params[:key])
+    if image
+      image.purge
+    end
+  end
+
   def image
     image = ActiveStorage::Blob.find_by(key: params[:key])
     send_data image.download,
@@ -81,14 +96,17 @@ class PubsController < ApplicationController
                   :address_postcode,
                   :description,
                   pub_tables_attributes: [
+                      :id,
                       :table_number,
                       :table_capacity,
                       :location
                   ],
                   opening_hours_attributes: [
+                      :id,
                       :start,
                       :end,
                       opening_hour_days_attributes: [
+                          :id,
                           :day_int
                       ]
                   ],

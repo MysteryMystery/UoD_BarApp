@@ -20,14 +20,6 @@ class ApplicationRecord < ActiveRecord::Base
   end
 
   protected
-    def check_is_owned_pub
-      unless @user.owns_pub @pub
-        render json: [
-            "message" => "User does not own this pub."
-        ]
-      end
-    end
-
   def add_relation_to_json(json, relation)
     associated_model = self.send(relation)
     relation_type = self._reflections[relation.to_s].macro

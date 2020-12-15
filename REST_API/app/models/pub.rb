@@ -18,10 +18,6 @@ class Pub < ApplicationRecord
       pub_thumbnail_path(image.key)
     end
     myJson = add_relations_to_json(myJson, [:pub_tables, :opening_hours])
-    myJson[:relationships] = [
-      :pub_tables => [:data => self.pub_tables.as_json],
-      :opening_hours => [:data => self.opening_hours.as_json],
-    ]
     myJson
   end
 end

@@ -5,6 +5,7 @@ import fetch from "fetch";
 import ENV from "front-end/config/environment";
 import {inject as service} from "@ember/service";
 
+
 export default class PubCreateComponent extends Component {
   DAYS = ["Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"]
 
@@ -55,22 +56,129 @@ export default class PubCreateComponent extends Component {
   }
 
   @action
-  populateForm(){
+  async populateForm(){
     const myPub = this.args.pub;
     if (myPub === undefined)
       return;
 
-    this.name = myPub.name
-    this.description = myPub.description
-    this.address_line_1 = myPub.address_line_1
-    this.address_line_2 = myPub.address_line_2
-    this.address_line_3 = myPub.address_line_3
-    this.address_line_4 = myPub.address_line_4
-    this.address_postcode = myPub.address_postcode
-    this.existing_images = myPub.images
+    /*
+    I cannot seem to get the relationship to work with ember data as the documentation is not thorough
+    always returning null
+    so, the fetch way it is
+    will attempt to debug / rewrite late if time permits
+     */
+    let fetchData = {}
+    await fetch(ENV.APP.RAILS_API + "pubs/" + myPub.id)
+      .then(_ => _.json())
+      .then(d => fetchData = d)
 
-    console.log(myPub.pub_tables)
+    this.name = fetchData.data.attributes.name
+    this.description = fetchData.data.attributes.description
+    this.address_line_1 = fetchData.data.attributes.address_line_1
+    this.address_line_2 = fetchData.data.attributes.address_line_2
+    this.address_line_3 = fetchData.data.attributes.address_line_3
+    this.address_line_4 = fetchData.data.attributes.address_line_4
+    this.address_postcode = fetchData.data.attributes.address_postcode
+    this.existing_images = fetchData.data.attributes.images
 
+    this.populateTables(fetchData)
+    this.populateOpeningHours(fetchData)
+  }
+
+  populateTables(fetchData){
+    let pubTables = fetchData.data.relationships.pub_tables.data
+    if (pubTables.length > 0)
+      this.tables = []
+
+    const includedModels = fetchData.data.included
+    for (const index in pubTables){
+      if (!pubTables.hasOwnProperty(index))
+        continue
+      const table = pubTables[index]
+      //find the table in includes
+      let tableId = table.id
+      let modelName = table.type
+
+      for (const modelId in includedModels){
+        if (!includedModels.hasOwnProperty(modelId))
+          continue
+
+        let model = includedModels[modelId]
+        if (model.type === modelName && model.id === tableId){
+          this.tables.push({
+            id: model.id,
+            table_number: model.attributes.table_number,
+            table_capacity: model.attributes.table_capacity,
+            location: model.attributes.location
+          })
+          //just remove from the search arr to reduce the number of iterations each time
+          let index = includedModels.indexOf(model)
+          if (index >= 0)
+            includedModels.splice(index, 1)
+        }
+      }
+    }
+    // ember doesnt like array.push so have to tell it to update by reassigning array itself
+    // eslint-disable-next-line no-self-assign
+    this.tables = this.tables
+  }
+
+  populateOpeningHours(fetchData){
+    let openingHours = fetchData.data.relationships.opening_hours.data
+    if (openingHours.length > 0)
+      this.openingHours = []
+
+    const includedModels = fetchData.data.included
+    for (const index in openingHours){
+      if (!openingHours.hasOwnProperty(index))
+        continue
+      const openingHour = openingHours[index]
+      //find the table in includes
+      let openingHourId = openingHour.id
+      let modelName = openingHour.type
+
+      for (const modelId in includedModels){
+        if (!includedModels.hasOwnProperty(modelId))
+          continue
+
+        let model = includedModels[modelId]
+        if (model.type === modelName && model.id === openingHourId){
+          let toPush = {
+            id: model.id,
+            start: this.UTCtoTime(model.attributes.start),
+            end: this.UTCtoTime(model.attributes.end),
+            opening_hour_days_attributes: []
+          }
+
+          for (let daysIndex in model.included){
+            if (!model.included.hasOwnProperty(daysIndex))
+              continue
+            let day = model.included[daysIndex]
+            toPush.opening_hour_days_attributes.push({
+              day_int: day.attributes.day_int,
+              id: day.id
+            })
+          }
+
+          this.openingHours.push(toPush)
+          //just remove from the search arr to reduce the number of iterations each time
+          let index = includedModels.indexOf(model)
+          if (index >= 0)
+            includedModels.splice(index, 1)
+        }
+      }
+    }
+  }
+
+  UTCtoTime(datetime){
+    let date = new Date(datetime)
+    let hours = date.getHours()
+    if (hours < 10)
+      hours = "0" + hours
+    let mins = date.getMinutes()
+    if (mins < 10)
+      mins = "0" + mins
+    return hours + ":" + mins
   }
 
   @action
@@ -142,7 +250,7 @@ export default class PubCreateComponent extends Component {
     this.openingHours.push({
       start: "00:00",
       end: "23:00",
-      days: []
+      opening_hour_days_attributes: []
     })
     this.openingHours = this.openingHours
   }
@@ -157,8 +265,6 @@ export default class PubCreateComponent extends Component {
     if (uploadedFiles.length === 0)
       return
 
-    console.log(uploadedFiles)
-
     fileReader.onload = () => {
       processedData.push(fileReader.result)
     }
@@ -169,8 +275,16 @@ export default class PubCreateComponent extends Component {
 
   @action
   async submit(){
-    await fetch(ENV.APP.RAILS_API + "pubs", {
-      method: "POST",
+    let urlExt = "";
+    let fetchMethod = "POST"
+
+    if (this.args.pub){
+      urlExt = "/" + this.args.pub.id
+      fetchMethod = "PATCH"
+    }
+
+    await fetch(ENV.APP.RAILS_API + "pubs" + urlExt, {
+      method: fetchMethod,
       mode: "cors",
       headers: {
         "Content-Type": "application/json"
@@ -194,11 +308,89 @@ export default class PubCreateComponent extends Component {
       })
     })
       .then(_ => _.json())
-      .then(data => {
-        console.log(data)
-        //this.router.transitionTo("dashboard")
+      .then(() => {
+        this.router.transitionTo("dashboard")
       })
       .catch(() => this.errorMsg = "Something went wrong")
+  }
+
+  @action
+  async resetOpeningHours(event){
+    this.openingHours = []
+
+    if (this.args.pub === undefined)
+      return
+
+    await fetch(ENV.APP.RAILS_API + "pubs/" + this.args.pub.id + "/opening_hours?jwt=" + this.session.getAttr("jwt") , {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      redirect: "follow"
+    })
+  }
+
+  @action
+  async resetTables(event){
+    this.tables = []
+
+    if (this.args.pub === undefined)
+      return
+
+    await fetch(ENV.APP.RAILS_API + "pubs/" + this.args.pub.id + "/pub_tables?jwt=" + this.session.getAttr("jwt") , {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      redirect: "follow"
+    })
+  }
+
+  @action
+  async destroyPub(event){
+    if (this.args.pub === undefined)
+      return
+
+    await fetch(ENV.APP.RAILS_API + "pubs/" + this.args.pub.id + "?jwt=" + this.session.getAttr("jwt") , {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      redirect: "follow"
+    }).then(() => {
+      this.router.transitionTo("dashboard")
+    })
+  }
+
+  @action
+  async deleteImage(event){
+    let imgUrl = event.target.src
+
+    this.existing_images.splice(this.existing_images.indexOf(imgUrl), 1)
+    this.existing_images = this.existing_images
+
+    if (this.args.pub === undefined)
+      return
+
+    //now we want the blob. Its at the end.
+    let split = imgUrl.split("/")
+    let lastElement = split[split.length - 1]
+
+    //now remove the stuff after ?
+    let blob = lastElement.split("?")[0]
+    await fetch(ENV.APP.RAILS_API + "pubs/" + this.args.pub.id + "/image?jwt=" + this.session.getAttr("jwt") + "&key=" + blob, {
+      method: "DELETE",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      redirect: "follow"
+    }).then(() => {
+      this.router.transitionTo("dashboard")
+    })
   }
 }
 
