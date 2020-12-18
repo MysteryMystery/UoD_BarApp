@@ -11,7 +11,8 @@ services:
     rest_api:
         build: ./REST_API
         volumes:
-            - .:/app
+            #- .:/app
+            - "./rails.sqlite3:app/db/development.sqlite3"
         ports:
             - "3000:3000"
         depends_on: 
