@@ -1,5 +1,7 @@
 FROM ruby:2.7.2-alpine
 
+RUN sudo chown -R $USER:$USER ./REST_API/tmp/db/#innodb_temp
+
 RUN apk update && apk add git build-base nodejs tzdata postgresql-dev postgresql-client libxslt-dev libxml2-dev imagemagick sqlite-dev
 
 RUN mkdir /app
