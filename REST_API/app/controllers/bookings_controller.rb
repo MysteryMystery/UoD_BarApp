@@ -26,10 +26,10 @@ class BookingsController < ApplicationController
   # POST /bookings
   def create
     booking_data = booking_params
-    booking_data[:minutes] = 120
+    #booking_data[:minutes] = 120
 
     # Validate and get a table
-    open_slots = open_booking_slots_internal params[:pub_id], params[:table_capacity], params[:date]
+    open_slots = open_booking_slots_internal params[:pub_id], params[:table_capacity], params[:date], params[:minutes]
     if open_slots.include? params[:time]
       all_tables_of_capacity = PubTable.where(table_capacity: params[:table_capacity]).map { |x| x.id }
       bookings_at_this_time = existing_bookings_on_date(params[:pub_id], params[:date], params[:table_capacity]).where(time: params[:time])
@@ -71,24 +71,28 @@ class BookingsController < ApplicationController
     #     capacity = params[:table_capacity]
     #     query_date = params[:date] # y-m-d
     #
-    open_slots = open_booking_slots_internal params[:pub], params[:table_capacity], params[:date]
-    return_open_booking_slots open_slots
+    open_slots = open_booking_slots_internal params[:pub], params[:table_capacity], params[:date], params[:minutes]
+    render json: {:times => open_slots}
   end
 
   private
-    def open_booking_slots_internal pub, capacity, query_date
+    def open_booking_slots_internal pub, capacity, query_date, duration
       time = query_date.to_time
+
+      #if time.past? then return [] end
+
       weekday = time.wday #0 = sunday, 0..6
 
       opening_hours_models = hours_open_on_day pub, weekday
       if opening_hours_models.empty?
-        return return_open_booking_slots []
+        return  []
       end
 
       all_valid_tables = pub_tables(pub).where(table_capacity: capacity)
       existing_bookings = existing_bookings_on_date(pub, query_date, capacity)
 
       open_slots = []
+
       opening_hours_models.each do |opening_hour|
         start_time = opening_hour.start
         end_time = opening_hour.end
@@ -123,7 +127,7 @@ class BookingsController < ApplicationController
               :date,
               :time,
               :table_capacity,
-          #:minutes,
+              :minutes,
           #:pub_table_id
           )
     end

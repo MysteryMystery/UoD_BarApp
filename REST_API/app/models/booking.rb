@@ -13,14 +13,6 @@ class Booking < ApplicationRecord
 
   def as_json(options = nil)
     json = super options
-    json[:relationships] = {
-        :pub_table => {
-            :data => self.pub_table.as_json
-        },
-        :pub => {
-            :data => self .pub.as_json
-        }
-    }
-    json
+    #add_relations_to_json(json, :pub, :pub_table)
   end
 end

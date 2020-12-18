@@ -13,6 +13,7 @@ export default class BookTableFormComponent extends Component {
 
   @tracked booking_times = [];
   @tracked booking_time;
+  @tracked duration = 120;
 
   @tracked booking_number = null;
 

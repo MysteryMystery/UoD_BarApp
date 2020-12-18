@@ -15,12 +15,17 @@ export default class SessionService extends Service {
 
   get isLoggedIn(){
     var v = this.getAttr("jwt")
-    console.log(!!v)
-    return !!v
+    return v !== undefined
   }
 
   set(key, value){
     this.sessionData[key] = value;
+    localStorage.setItem(this.storageKey, JSON.stringify(this.sessionData))
+  }
+
+  unset(key){
+    delete this.sessionData[key]
+    console.log(this.sessionData)
     localStorage.setItem(this.storageKey, JSON.stringify(this.sessionData))
   }
 

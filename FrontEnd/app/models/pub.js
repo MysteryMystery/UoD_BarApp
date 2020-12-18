@@ -16,4 +16,8 @@ export default class PubModel extends Model {
 
   @attr created_at;
   @attr updated_at;
+
+  oneLineAddr(){
+    return this.address_line_1 + " " + this.address_line_2 + " " + this.address_line_3 + " " + this.address_line_4 + " " + this.address_postcode
+  }
 }

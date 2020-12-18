@@ -46,7 +46,7 @@ class ApplicationRecord < ActiveRecord::Base
     json
   end
 
-  def add_relations_to_json(json, relations)
+  def add_relations_to_json(json, *relations)
     relations.each { |relation| json = add_relation_to_json(json, relation) }
     json
   end

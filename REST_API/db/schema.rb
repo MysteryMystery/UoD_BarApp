@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 2020_11_02_171100) do
     t.text "booking_number"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["booking_number"], name: "index_bookings_on_booking_number", unique: true
     t.index ["pub_id"], name: "index_bookings_on_pub_id"
     t.index ["pub_table_id"], name: "index_bookings_on_pub_table_id"
   end

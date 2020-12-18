@@ -18,7 +18,8 @@ export default class SearchBarComponent extends Component {
     if (this.search === "")
       return
     this.models = this.models.filter(model => {
-        return model["name"].toLowerCase().includes(this.search.toLowerCase());
+        var s = this.search.toLowerCase()
+        return model["name"].toLowerCase().includes(s) || model.oneLineAddr().toLowerCase().includes(s);
     })
   }
 }

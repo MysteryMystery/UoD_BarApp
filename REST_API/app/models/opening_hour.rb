@@ -6,6 +6,6 @@ class OpeningHour < ApplicationRecord
 
   def as_json(options = nil)
     json = super
-    add_relations_to_json(json, [:opening_hour_days])
+    add_relations_to_json(json, :opening_hour_days)
   end
 end

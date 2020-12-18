@@ -17,7 +17,7 @@ class Pub < ApplicationRecord
       Rails.application.routes.default_url_options[:host] +
       pub_thumbnail_path(image.key)
     end
-    myJson = add_relations_to_json(myJson, [:pub_tables, :opening_hours])
+    myJson = add_relations_to_json(myJson, :pub_tables, :opening_hours)
     myJson
   end
 end
