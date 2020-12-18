@@ -1,25 +1,13 @@
 version: "3.8"
 services:
-    database: 
-        image: mysql
-        command: --default-authentication-plugin=mysql_native_password
-        restart: always
-        environment:
-            MYSQL_ROOT_PASSWORD: example
-        volumes:
-            - ./tmp/db:/var/lib/mysql
-    rest_api:
+    rails:
         build: ./REST_API
+        command: "rails s"
         volumes:
-            #- .:/app
-            - "./rails.sqlite3:app/db/development.sqlite3"
+            - ./REST_API:/app
         ports:
             - "3000:3000"
-        depends_on: 
-            - database
     ember:
         build: ./FrontEnd
         ports: 
             - "8080:80"
-        depends_on: 
-            - rest_api
